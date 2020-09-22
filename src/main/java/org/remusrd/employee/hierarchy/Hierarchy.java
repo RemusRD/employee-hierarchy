@@ -1,15 +1,13 @@
 package org.remusrd.employee.hierarchy;
 
-import java.util.List;
-
 public class Hierarchy {
-    private final List<Employee> employees;
+    private final Employee supervisor;
 
-    public Hierarchy(List<Employee> employees) {
-        this.employees = employees;
+    public Hierarchy(Employee supervisor) {
+        this.supervisor = supervisor;
     }
 
     public Employee getSupervisor() {
-        return employees.get(0);
+        return supervisor;
     }
 }
