@@ -1,5 +1,7 @@
 package org.remusrd.employee.hierarchy;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +14,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
+@Component
 public class HierarchyService {
 
     public Hierarchy retrieveEmployeeHierarchy(Map<String, String> employeeSupervisors) {
