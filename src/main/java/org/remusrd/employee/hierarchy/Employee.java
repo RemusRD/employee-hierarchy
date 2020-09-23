@@ -23,17 +23,18 @@ public class Employee {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(name, subordinates);
-    }
-
-    @Override
+    //FIXME: deep equals some times does not work
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Employee employee = (Employee) o;
-        return Objects.equals(name, employee.name) &&
-        new HashSet<>(subordinates).equals(new HashSet<>(employee.subordinates));
+        return name.equals(employee.name) &&
+                subordinates.equals(employee.subordinates);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, subordinates);
     }
 
     @Override

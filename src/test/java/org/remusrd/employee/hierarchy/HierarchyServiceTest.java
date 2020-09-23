@@ -31,14 +31,10 @@ class HierarchyServiceTest {
 
         final Employee supervisor = hierarchy.getSupervisor();
         assertThat(supervisor.getName()).isEqualTo("Jonas");
-        assertThat(supervisor.getSubordinates())
-                .contains(
-                        new Employee("Sophie",
-                                List.of(new Employee("Nick",
-                                                List.of(new Employee("Pete", emptyList()), new Employee("Barbara", emptyList()))
-                                        )
-                                )
-                        )
-                );
+        final Employee firstSubordinate = supervisor.getSubordinates().get(0);
+        assertThat(firstSubordinate.getName()).isEqualTo("Sophie");
+        final Employee secondSubordinate = firstSubordinate.getSubordinates().get(0);
+        assertThat(secondSubordinate.getName()).isEqualTo("Nick");
+        assertThat(secondSubordinate.getSubordinates()).containsAll( List.of(new Employee("Pete", emptyList()), new Employee("Barbara", emptyList())));
     }
 }
