@@ -1,4 +1,4 @@
-package org.remusrd.employee.hierarchy.rest;
+package org.remusrd.employee.hierarchy.rest.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

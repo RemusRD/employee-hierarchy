@@ -19,24 +19,17 @@ public class HierarchyService {
 
     public Hierarchy retrieveEmployeeHierarchy(Map<String, String> employeeSupervisors) {
         //FIXME: refactor this
-        final Map<String, List<String>> employeesBySupervisor = employeeSupervisors.entrySet()
-                .stream()
-                .collect(
-                        groupingBy(
-                                Map.Entry::getValue,
-                                mapping(Map.Entry::getKey, toUnmodifiableList()))
-                );
+        final Map<String, List<String>> employeesBySupervisor = groupEmployeesBySupervisor(employeeSupervisors);
 
+        final var hierarchy = createEmployeeHierarchy(employeesBySupervisor);
+
+        return hierarchy;
+    }
+
+    private Hierarchy createEmployeeHierarchy(Map<String, List<String>> employeesBySupervisor) {
         Employee topSupervisor = null;
 
-
-        final int employeesToBeProcessed = Math.toIntExact(
-                employeesBySupervisor.entrySet()
-                        .stream()
-                        .map(this::addSupervisorAsEmployee)
-                        .flatMap(Collection::stream)
-                        .distinct()
-                        .count());
+        final int employeesToBeProcessed = countNumberOfEmployees(employeesBySupervisor);
 
         final HashMap<String, Employee> processedEmployees = new HashMap<>();
 
@@ -49,8 +42,29 @@ public class HierarchyService {
                 }
             }
         }
-
         return new Hierarchy(topSupervisor);
+    }
+
+    private int countNumberOfEmployees(Map<String, List<String>> employeesBySupervisor) {
+        final int employeesToBeProcessed = Math.toIntExact(
+                employeesBySupervisor.entrySet()
+                        .stream()
+                        .map(this::addSupervisorAsEmployee)
+                        .flatMap(Collection::stream)
+                        .distinct()
+                        .count());
+        return employeesToBeProcessed;
+    }
+
+    private Map<String, List<String>> groupEmployeesBySupervisor(Map<String, String> employeeSupervisors) {
+        final Map<String, List<String>> employeesBySupervisor = employeeSupervisors.entrySet()
+                .stream()
+                .collect(
+                        groupingBy(
+                                Map.Entry::getValue,
+                                mapping(Map.Entry::getKey, toUnmodifiableList()))
+                );
+        return employeesBySupervisor;
     }
 
     private List<String> addSupervisorAsEmployee(Map.Entry<String, List<String>> supervisorEmployees) {
