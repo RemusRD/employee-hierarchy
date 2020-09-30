@@ -24,14 +24,15 @@ class HierarchyControllerIT {
 
     public static final String USERNAME = "test";
     public static final String PASSWORD = "test";
+    private static final String HOST = "http://localhost:";
+    private HttpHeaders headers;
+
     @LocalServerPort
     private int port;
 
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private static final String HOST = "http://localhost:";
-    private HttpHeaders headers;
 
     @BeforeEach
     void setUp() {

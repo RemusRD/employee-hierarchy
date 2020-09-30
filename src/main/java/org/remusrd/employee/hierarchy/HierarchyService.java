@@ -2,58 +2,45 @@ package org.remusrd.employee.hierarchy;
 
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.minBy;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Component
 public class HierarchyService {
 
     public Hierarchy retrieveEmployeeHierarchy(Map<String, String> employeeSupervisors) {
-        //FIXME: refactor this
         final Map<String, List<String>> employeesBySupervisor = groupEmployeesBySupervisor(employeeSupervisors);
+        final String topSupervisorName = getTopSupervisorName(employeeSupervisors);
 
-        final var hierarchy = createEmployeeHierarchy(employeesBySupervisor);
+        final var hierarchy = createEmployeeHierarchy(topSupervisorName,employeesBySupervisor);
 
         return hierarchy;
     }
 
-    private Hierarchy createEmployeeHierarchy(Map<String, List<String>> employeesBySupervisor) {
-        Employee topSupervisor = null;
-
-        final int employeesToBeProcessed = countNumberOfEmployees(employeesBySupervisor);
+    private Hierarchy createEmployeeHierarchy(String topSupervisorName, Map<String, List<String>> employeesBySupervisor) {
 
         final HashMap<String, Employee> processedEmployees = new HashMap<>();
-
-        while (processedEmployees.size() < employeesToBeProcessed) {
-            for (final Map.Entry<String, List<String>> employee : employeesBySupervisor.entrySet()) {
-                if (topSupervisor == null) {
-                    topSupervisor = mapEmployee(employeesBySupervisor, processedEmployees, employee.getKey());
-                } else if (employeesBySupervisor.get(employee.getKey()).contains(topSupervisor.getName())) {
-                    topSupervisor = mapEmployee(employeesBySupervisor, processedEmployees, employee.getKey());
-                }
-            }
-        }
-        return new Hierarchy(topSupervisor);
+        return new Hierarchy(mapEmployee(employeesBySupervisor,processedEmployees,topSupervisorName, emptyList()));
     }
 
-    private int countNumberOfEmployees(Map<String, List<String>> employeesBySupervisor) {
-        final int employeesToBeProcessed = Math.toIntExact(
-                employeesBySupervisor.entrySet()
-                        .stream()
-                        .map(this::addSupervisorAsEmployee)
-                        .flatMap(Collection::stream)
-                        .distinct()
-                        .count());
-        return employeesToBeProcessed;
+    private String getTopSupervisorName(Map<String, String> employeesBySupervisor) {
+        //FIXME: improve the exceptions thrown and handle them
+        final Map.Entry<String, String> anyEmployee = employeesBySupervisor.entrySet().stream().findFirst().orElseThrow(IllegalArgumentException::new);
+        String supervisor = anyEmployee.getKey();
+        while (employeesBySupervisor.containsKey(supervisor)) {
+            supervisor = employeesBySupervisor.get(supervisor);
+        }
+        return supervisor;
     }
 
     private Map<String, List<String>> groupEmployeesBySupervisor(Map<String, String> employeeSupervisors) {
@@ -67,27 +54,26 @@ public class HierarchyService {
         return employeesBySupervisor;
     }
 
-    private List<String> addSupervisorAsEmployee(Map.Entry<String, List<String>> supervisorEmployees) {
-        final ArrayList<String> employees = new ArrayList<>(supervisorEmployees.getValue());
-        employees.add(supervisorEmployees.getKey());
-        return Collections.unmodifiableList(employees);
-    }
-
-    private Employee mapEmployee(Map<String, List<String>> employeeSupervisors, Map<String, Employee> processedEmployees, String employeeName) {
+    private Employee mapEmployee(Map<String, List<String>> employeeSupervisors, Map<String, Employee> processedEmployees, String employeeName, List<String> supervisorsName) {
         if (processedEmployees.containsKey(employeeName)) {
             return processedEmployees.get(employeeName);
         }
 
-        final List<String> subordinates = employeeSupervisors.get(employeeName) == null ? Collections.emptyList() : employeeSupervisors.get(employeeName);
+        final List<String> subordinates = employeeSupervisors.get(employeeName) == null ? emptyList() : employeeSupervisors.get(employeeName);
 
 
         final Employee employee = subordinates
                 .stream()
-                .map(it -> mapEmployee(employeeSupervisors, processedEmployees, it))
-                .collect(collectingAndThen(toUnmodifiableList(), listOfEmployees -> new Employee(employeeName, listOfEmployees)));
+                .map(it -> mapEmployee(employeeSupervisors, processedEmployees, it, addSupervisorName(employeeName, supervisorsName)))
+                .collect(collectingAndThen(toUnmodifiableList(), listOfEmployees -> new Employee(employeeName, listOfEmployees, supervisorsName)));
 
         processedEmployees.put(employeeName, employee);
 
         return employee;
     }
+
+    private List<String> addSupervisorName(String employeeName, List<String> supervisorsName) {
+        return supervisorsName == null ? List.of(employeeName) : Stream.concat(supervisorsName.stream(), Stream.of(employeeName)).collect(toUnmodifiableList());
+    }
+
 }
