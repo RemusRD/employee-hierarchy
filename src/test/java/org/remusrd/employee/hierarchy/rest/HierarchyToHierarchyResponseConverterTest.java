@@ -2,6 +2,7 @@ package org.remusrd.employee.hierarchy.rest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.remusrd.employee.hierarchy.EmployeeFactory;
 import org.remusrd.employee.hierarchy.Hierarchy;
 import org.remusrd.employee.hierarchy.rest.dto.EmployeeResponse;
 
