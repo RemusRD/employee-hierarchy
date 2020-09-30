@@ -8,7 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 
@@ -28,20 +31,23 @@ class HierarchyControllerIT {
     private TestRestTemplate restTemplate;
 
     private static final String HOST = "http://localhost:";
+    private HttpHeaders headers;
 
     @BeforeEach
     void setUp() {
         restTemplate = restTemplate.withBasicAuth(USERNAME, PASSWORD);
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
     }
 
     @Test
     void createHierarchyShouldReturnTheCorrectHierarchyResult() {
-        final String hierarchyRequest = "{\n" +
+        final HttpEntity<String> hierarchyRequest = new HttpEntity<>("{\n" +
                 "    \"Pete\": \"Nick\",\n" +
                 "    \"Barbara\": \"Nick\",\n" +
                 "    \"Nick\": \"Sophie\",\n" +
                 "    \"Sophie\": \"Jonas\"\n" +
-                "} ";
+                "} ", headers);
 
         final ResponseEntity<String> responseEntity = this.restTemplate
                 .postForEntity(HOST + port + "/employees/hierarchy", hierarchyRequest, String.class);
