@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 public class HierarchyService {
 
     public Hierarchy retrieveEmployeeHierarchy(Map<String, String> employeeSupervisors) {
+        //FIXME: refactor this
         final Map<String, List<String>> employeesBySupervisor = employeeSupervisors.entrySet()
                 .stream()
                 .collect(

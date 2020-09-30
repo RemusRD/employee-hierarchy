@@ -37,12 +37,4 @@ public class Employee {
         return Objects.hash(name, subordinates);
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Employee.class.getSimpleName() + "[", "]")
-                .add("name='" + name + "'")
-                .add("subordinates=" + subordinates)
-                .toString();
-    }
-
 }
