@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+
 @Component
 public class HierarchyRepositoryAdapter implements HierarchyRepository {
 
@@ -35,8 +37,15 @@ public class HierarchyRepositoryAdapter implements HierarchyRepository {
     }
 
     @Override
-    public SupervisorRelation findByName(String name) {
-        return repository.findById(name).orElseThrow(NotFoundException::new);
+    public Hierarchy findByName(String name) {
+        final SupervisorRelation supervisorRelation = repository.findById(name).orElseThrow(NotFoundException::new);
+        return new Hierarchy(
+                new Employee(supervisorRelation.getSecondSupervisorName(),
+                        List.of(new Employee(supervisorRelation.getFirstSupervisorName(),
+                                List.of(new Employee(supervisorRelation.getEmployeeName(), emptyList(), List.of(supervisorRelation.getSecondSupervisorName(), supervisorRelation.getFirstSupervisorName())))
+                                , List.of(supervisorRelation.getSecondSupervisorName())
+                        )), emptyList())
+        );
     }
 
     private List<Employee> flattenEmployees(Employee employee) {
@@ -52,16 +61,16 @@ public class HierarchyRepositoryAdapter implements HierarchyRepository {
     }
 
     private SupervisorRelation calculateRelations(Employee employee) {
-        final String firstSupervisorName = getValueOrDefault(employee.getSupervisorsName(), 0);
-        final String secondSupervisorName = getValueOrDefault(employee.getSupervisorsName(), 1);
+        final String firstSupervisorName = getValueOrDefault(employee.getSupervisorsName(), employee.getSupervisorsName().size() -1);
+        final String secondSupervisorName = getValueOrDefault(employee.getSupervisorsName(), employee.getSupervisorsName().size() -2);
 
-        return new SupervisorRelation(employee.getName(),firstSupervisorName,secondSupervisorName );
+        return new SupervisorRelation(employee.getName(), firstSupervisorName, secondSupervisorName);
     }
 
-    private String getValueOrDefault(List<String> values, int index){
+    private String getValueOrDefault(List<String> values, int index) {
         try {
             return values.get(index);
-        } catch (Exception e){
+        } catch (Exception e) {
             return "";
         }
     }

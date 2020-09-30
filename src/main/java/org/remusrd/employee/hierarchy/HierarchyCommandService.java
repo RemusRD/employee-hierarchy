@@ -1,8 +1,8 @@
 package org.remusrd.employee.hierarchy;
 
+import org.remusrd.employee.hierarchy.persistence.HierarchyRepositoryAdapter;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,25 +12,29 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.minBy;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Component
-public class HierarchyService {
+public class HierarchyCommandService {
+    private final HierarchyRepository repository;
+
+    public HierarchyCommandService(HierarchyRepository repository) {
+        this.repository = repository;
+    }
 
     public Hierarchy retrieveEmployeeHierarchy(Map<String, String> employeeSupervisors) {
         final Map<String, List<String>> employeesBySupervisor = groupEmployeesBySupervisor(employeeSupervisors);
         final String topSupervisorName = getTopSupervisorName(employeeSupervisors);
 
-        final var hierarchy = createEmployeeHierarchy(topSupervisorName,employeesBySupervisor);
+        final var hierarchy = createEmployeeHierarchy(topSupervisorName, employeesBySupervisor);
+        repository.save(hierarchy);
 
         return hierarchy;
     }
 
     private Hierarchy createEmployeeHierarchy(String topSupervisorName, Map<String, List<String>> employeesBySupervisor) {
-
         final HashMap<String, Employee> processedEmployees = new HashMap<>();
-        return new Hierarchy(mapEmployee(employeesBySupervisor,processedEmployees,topSupervisorName, emptyList()));
+        return new Hierarchy(mapEmployee(employeesBySupervisor, processedEmployees, topSupervisorName, emptyList()));
     }
 
     private String getTopSupervisorName(Map<String, String> employeesBySupervisor) {

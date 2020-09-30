@@ -6,5 +6,5 @@ public interface HierarchyRepository {
 
     void save(Hierarchy hierarchy);
 
-    SupervisorRelation findByName(String name);
+    Hierarchy findByName(String name);
 }

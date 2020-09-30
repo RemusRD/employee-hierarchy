@@ -8,14 +8,15 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-class HierarchyServiceTest {
+class HierarchyCommandServiceTest {
 
-    private HierarchyService sut;
+    private HierarchyCommandService sut;
 
     @BeforeEach
     void setUp() {
-        sut = new HierarchyService();
+        sut = new HierarchyCommandService(mock(HierarchyRepository.class));
     }
 
     @Test
