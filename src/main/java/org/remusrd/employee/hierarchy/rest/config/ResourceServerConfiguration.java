@@ -19,10 +19,9 @@ import java.util.List;
 public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter {
     private static final String PERSONIO_ROLE = "PERSONIO";
 
-    //FIXME: remove default values and use an application-test instead
     protected ResourceServerConfiguration(final AuthenticationManagerBuilder auth,
-                                          @Value("${hierarchy.internal.auth.username:test}") final String internalUser,
-                                          @Value("${hierarchy.internal.auth.password:test}") final String internalPassword) throws Exception {
+                                          @Value("${hierarchy.internal.auth.username}") final String internalUser,
+                                          @Value("${hierarchy.internal.auth.password}") final String internalPassword) throws Exception {
         auth.inMemoryAuthentication().withUser(internalUser).password("{noop}" + internalPassword).roles(PERSONIO_ROLE);
     }
 

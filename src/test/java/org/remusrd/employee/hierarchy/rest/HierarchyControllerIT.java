@@ -14,16 +14,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = EmployeeHierarchyApplication.class,
         webEnvironment = WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 class HierarchyControllerIT {
 
     public static final String USERNAME = "test";
-    public static final String PASSWORD = "test";
+    public static final String PASSWORD = "d3f4ult.";
     private static final String HOST = "http://localhost:";
     private HttpHeaders headers;
 

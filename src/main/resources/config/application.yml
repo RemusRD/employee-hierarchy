@@ -1,3 +1,9 @@
+hierarchy:
+  internal:
+    auth:
+      username: test
+      password: test
+
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/MyAppDb?useSSL=false&allowPublicKeyRetrieval=true

@@ -13,7 +13,7 @@ public class EmployeeFactory {
     public static Employee simpleEmployee() {
         return new Employee("Jonas", List.of(
                 new Employee("Sophie",
-                        List.of(new Employee("Pete", emptyList(), List.of("Sophie", "Jonas")), new Employee("Barbara", emptyList(),  List.of("Sophie", "Jonas"))),  List.of("Jonas"))),
+                        List.of(new Employee("Pete", emptyList(), List.of("Jonas", "Sophie")), new Employee("Barbara", emptyList(),  List.of("Jonas", "Sophie"))),  List.of("Jonas"))),
                         emptyList());
     }
 
